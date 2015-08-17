@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="http://leafletjs.com/dist/leaflet.css">
     <script src="http://leafletjs.com/dist/leaflet.js"></script>
     <script src="Polyline.encoded.js"></script>
+    <!--<script src="leaflet.textpath.js"></script>-->
     <script>
       var map;
       var segments;
@@ -58,10 +59,16 @@
         // console.log(routes)
         $.each(routes, function(i, route){
           var color = '#' + route.color;
+          var text_color = '#' + route.text_color
           $.each(route.segments, function(j, segment_descriptor){
             encoded = segments[segment_descriptor[0]]
 
             var polyline = L.Polyline.fromEncoded(encoded, {weight: 3, color: color});
+
+            // polyline.setText(route.short_name,{attributes: {stroke: text_color});
+            var popup_contents = "<b>Route #" + route.short_name + "</b><br>" + route.long_name 
+            polyline.bindPopup(popup_contents)
+
             polyline.addTo(map)
           })
         })
