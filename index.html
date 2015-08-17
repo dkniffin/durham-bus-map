@@ -1,0 +1,84 @@
+<html>
+  <head>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <!-- Leafelt -->
+    <link rel="stylesheet" href="http://leafletjs.com/dist/leaflet.css">
+    <script src="http://leafletjs.com/dist/leaflet.js"></script>
+    <script src="Polyline.encoded.js"></script>
+    <script>
+      var map;
+      var segments;
+      var routes = {};
+      function setupMap() {
+        map = L.map('map').setView([35.9886, -78.9072], 15);
+
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+      }
+      function getData(cb){
+        $.ajax({
+          url: "https://transloc-api-1-2.p.mashape.com/routes.json",
+          data: {
+            agencies: 24
+          },
+          datatype: 'json',
+          beforeSend: function(xhr) {
+            xhr.setRequestHeader("X-Mashape-Authorization", "cwmZUCfrAmmshk2himEeOp6BbnCXp1kHPKUjsnqmMYIqyeXYxE"); // Enter here your Mashape key
+          },
+          success: function(response){
+            var agencies = response.data;
+            $.each(agencies, function(agency,agency_routes) {
+              var route_ids = Object.keys(agency_routes);
+              $.each(route_ids,function(i){
+                var route = agency_routes[i]
+                routes[route.route_id] = route
+              })
+            })
+          }
+        })
+
+        $.ajax({
+          url: "https://transloc-api-1-2.p.mashape.com/segments.json",
+          data: {
+            agencies: 24
+          },
+          datatype: 'json',
+          beforeSend: function(xhr) {
+            xhr.setRequestHeader("X-Mashape-Authorization", "cwmZUCfrAmmshk2himEeOp6BbnCXp1kHPKUjsnqmMYIqyeXYxE"); // Enter here your Mashape key
+          },
+          success: function(response){
+            segments = response.data
+          }
+        })
+      }
+
+      function addRoutesToMap() {
+        // console.log(routes)
+        $.each(routes, function(i, route){
+          var color = '#' + route.color;
+          $.each(route.segments, function(j, segment_descriptor){
+            encoded = segments[segment_descriptor[0]]
+
+            var polyline = L.Polyline.fromEncoded(encoded, {weight: 3, color: color});
+            polyline.addTo(map)
+          })
+        })
+      }
+      $(document).ready(function(){
+        setupMap();
+        getData();
+        setTimeout(function() { addRoutesToMap(); }, 1000); // Dirty hack
+
+      })
+    </script>
+    <style>
+      html, body { margin: 0px; }
+      #map { width: 100%; height: 100%; }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+  </body>
+</html>
