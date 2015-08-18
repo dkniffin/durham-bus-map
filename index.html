@@ -11,6 +11,7 @@
       var map;
       var segments;
       var routes = {};
+      var API_KEY = "cwmZUCfrAmmshk2himEeOp6BbnCXp1kHPKUjsnqmMYIqyeXYxE";
       function setupMap() {
         map = L.map('map').setView([35.9886, -78.9072], 15);
 
@@ -26,7 +27,7 @@
           },
           datatype: 'json',
           beforeSend: function(xhr) {
-            xhr.setRequestHeader("X-Mashape-Authorization", "cwmZUCfrAmmshk2himEeOp6BbnCXp1kHPKUjsnqmMYIqyeXYxE"); // Enter here your Mashape key
+            xhr.setRequestHeader("X-Mashape-Authorization", API_KEY);
           },
           success: function(response){
             var agencies = response.data;
@@ -47,7 +48,7 @@
           },
           datatype: 'json',
           beforeSend: function(xhr) {
-            xhr.setRequestHeader("X-Mashape-Authorization", "cwmZUCfrAmmshk2himEeOp6BbnCXp1kHPKUjsnqmMYIqyeXYxE"); // Enter here your Mashape key
+            xhr.setRequestHeader("X-Mashape-Authorization", API_KEY);
           },
           success: function(response){
             segments = response.data
@@ -66,7 +67,7 @@
             var polyline = L.Polyline.fromEncoded(encoded, {weight: 3, color: color});
 
             // polyline.setText(route.short_name,{attributes: {stroke: text_color});
-            var popup_contents = "<b>Route #" + route.short_name + "</b><br>" + route.long_name 
+            var popup_contents = "<b>Route #" + route.short_name + "</b><br>" + route.long_name
             polyline.bindPopup(popup_contents)
 
             polyline.addTo(map)
@@ -76,7 +77,7 @@
       $(document).ready(function(){
         setupMap();
         getData();
-        setTimeout(function() { addRoutesToMap(); }, 1000); // Dirty hack
+        setTimeout(function() { addRoutesToMap(); }, 2000); // Dirty hack
 
       })
     </script>
